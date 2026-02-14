@@ -4,41 +4,139 @@
 // denoted by n!, is the product of all positive integers less than or equal to n.
 // Example:  5! = 5 x 4 x 3 x 2 x 1 = 120
 // factorial(5);  // 120
-var factorial = function(n) {
- 
+var factorial = function(n, o = 1) {
+  if (n < 0) return null;
+  if (n === 0) return o; 
+
+  o *= n;
+  return factorial(n - 1, o);
 };
 
 // 2. Compute the sum of an array of integers.
 // Example:  sum([1, 2, 3, 4, 5, 6]);  // 21
-var sum = function(array) {
+var sum = function(array, out = 0) {
+  if(array.length < 1) {
+    return out
+  }
+  
+  out += array[0]
+  return sum(array.slice(1), out)
+
+/*
+//var sum = function(array, output=0){
+  // base
+  if (array.length === 0){
+    return output;
+  }
+  // recursion
+  
+  output += array[0]; // output = 1
+  
+  return sum(array.slice(1), output);
+  
+}
+
+console.log(sum([1, 2, 3]));*/
+
+// what is the purpose of the default param?
+
+/*
+
+// sum([1, 2, 3]) // <== #1
+        ^
+ // if () // FALSE
+ // RECURSION
+   // output = 1
+   // return sum([2, 3], 1)
+   
+     // sum([2, 3], 1) // <== #2
+             ^
+       // if () //
+       // RECURSION
+         // output = 3 
+         // return sum([3], 3)
+         
+           // sum([3], 3) // <== #3
+                   ^
+             // if () // FALSE
+             // RECURSION
+              // output = 6
+              // return sum([], 6)
+              
+                // sum([], 6)
+                  // if (0 === 0)
+                    // return 6
+
+
+*/
+
 };
 
 // 3. Sum all numbers in an array containing nested arrays.
 // Example: arraySum([1,[2,3],[[4]],5]); // 15
 var arraySum = function(array) {
+  if (array.length === 0) return 0;
+
+  return arraySum(array[0] + array.slice(1))
 };
 
 // 4. Check if a number is even.
 var isEven = function(n) {
+  if (n === 1) false
+  if (n === 0) true
+
+  return isEven(n - 2); //n / 2 can work mathematically, but with advanced js manipulation
 };
+
+console.log('isEven: ' + isEven(8), isEven(9), isEven(-90), isEven(-9), isEven(101), isEven(2048), isEven(24))
 
 // 5. Sum all integers below a given integer.
 // sumBelow(10); // 45
 // sumBelow(7); // 21
-var sumBelow = function(n) {
+var sumBelow = function(n, o = 0) {
+  if (n <= 1) return o 
+  
+  o += n - 1
+  return sumBelow(n - 1, o)
 };
 
 // 6. Get the integers in range (x, y).
 // Example:  range(2, 9);  // [3, 4, 5, 6, 7, 8]
-var range = function(x, y) {
+var range = function(x, y, out = []) {
+  //base
+ /* if ((y === x)) {
+    return [];
+  } //can't see why I can't just return default out */
+
+  if (Math.abs(y - x) <= 1) return []; //using absolute value to simplify 4 or 5 conditions
+  
+  
+  if (y > x) {
+    return [x + 1].concat(range(x + 1, y));
+  } else {
+    return [x - 1].concat(range(x - 1, y));
+  }
 };
+
+console.log(range(3, 17));
 
 // 7. Compute the exponent of a number.
 // The exponent of a number says how many times the base number is used as a factor.
 // 8^2 = 8 x 8 = 64.  Here, 8 is the base and 2 is the exponent.
 // Example:  exponent(4,3);  // 64
 // https://www.khanacademy.org/computing/computer-science/algorithms/recursive-algorithms/a/computing-powers-of-a-number
-var exponent = function(base, exp) {
+var exponent = function(base, exp, out = 1) {
+  if (exp === 0) {return out}
+  
+  //exponent (4, 3) //64
+  //4, -2 = 1/16 // -2 -> 1/-2*-1
+  if (exp > 0) {
+    out *= base;
+    return exponent(base, exp - 1, out)
+  } else if (exp < 0) {
+    out /= base;
+    return exponent(base, exp + 1, out) // div and add work here? really?
+  }
 };
 
 // 8. Determine if a number is a power of two.
@@ -46,14 +144,29 @@ var exponent = function(base, exp) {
 // powerOfTwo(16); // true
 // powerOfTwo(10); // false
 var powerOfTwo = function(n) {
+  if (n === 1 || n === -1) return true;
+  
+  if (n <= 0 || n % 2 !== 0) return false;
+  return powerOfTwo(n / 2);
 };
 
+console.log(powerOfTwo(64), powerOfTwo(14), powerOfTwo(99), powerOfTwo(-32), powerOfTwo(-2048), powerOfTwo(1024))
+
 // 9. Write a function that accepts a string a reverses it.
-var reverse = function(string) {
+var reverse = function(string, out = []) {
+  if (out[out.length - 1] === string[0]){return out}
+
+  out = out.push[string.length - 1]
+  console.log(out)
+  return reverse(string.slice(1), out)
 };
 
 // 10. Write a function that determines if a string is a palindrome.
 var palindrome = function(string) {
+  if (string[0] !== string[string.length - 1]) return false
+  
+  if (string.length <= 1) return true
+  return palindrome(string.slice(1, -1))
 };
 
 // 11. Write a function that returns the remainder of x divided by y without using the
@@ -62,18 +175,26 @@ var palindrome = function(string) {
 // modulo(17,5) // 2
 // modulo(22,6) // 4
 var modulo = function(x, y) {
-  
+  if (x < y) return x
+
+  return modulo(x - y, y)
 };
 
 // 12. Write a function that multiplies two numbers without using the * operator  or
 // JavaScript's Math object.
 // ATTENTION DO NOT LEAVE COMMENTS IN THIS FUNCTION. The test is looking for any ('/').
-var multiply = function(x, y) {
+var multiply = function(x, y, o = 1) {
+  if (x === 0 || y === 0) return 0
+  
+  
+
+  return multiply (x, y, o)
 };
 
 // 13. Write a function that divides two numbers without using the / operator  or
 // JavaScript's Math object.
 var divide = function(x, y) {
+
 };
 
 // 14. Find the greatest common divisor (gcd) of two positive numbers.  The GCD of two
@@ -82,7 +203,10 @@ var divide = function(x, y) {
 // http://www.cse.wustl.edu/~kjg/cse131/Notes/Recursion/recursion.html
 // https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/the-euclidean-algorithm
 var gcd = function(x, y) {
-  
+  if (x === 0) return y
+  if (y === 0) return x
+
+  return gcd(y, x % y)
 };
 
 // 15. Write a function that compares each character of two strings and returns true if
@@ -95,11 +219,11 @@ var compareStr = function(str1, str2) {
 
 // 16. Write a function that accepts a string and creates an array where each letter
 // occupies an index of the array.
-var createArray = function(str){
+var createArray = function(str){return str.split('')
 };
 
 // 17. Reverse the order of an array
-var reverseArr = function (array) {
+var reverseArr = function (array) {return array.reverse()
 };
 
 // 18. Create a new array with a given value and length.
