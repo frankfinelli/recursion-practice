@@ -82,8 +82,9 @@ var arraySum = function(array) {
 
 // 4. Check if a number is even.
 var isEven = function(n) {
-  if (n === 1) false
-  if (n === 0) true
+  n = Math.abs(n) // neg. integers
+  if (n === 1) return false
+  if (n === 0) return true
 
   return isEven(n - 2); //n / 2 can work mathematically, but with advanced js manipulation
 };
@@ -94,27 +95,39 @@ console.log('isEven: ' + isEven(8), isEven(9), isEven(-90), isEven(-9), isEven(1
 // sumBelow(10); // 45
 // sumBelow(7); // 21
 var sumBelow = function(n, o = 0) {
-  if (n <= 1) return o 
+  if (n === 0) return o 
   
-  o += n - 1
-  return sumBelow(n - 1, o)
+  if (n > 0) {
+    o += n - 1
+    return sumBelow(n - 1, o)
+  }
+
+  if (n < 0) {
+    o += n + 1;
+    return sumBelow(n + 1, o)
+  }
 };
 
 // 6. Get the integers in range (x, y).
 // Example:  range(2, 9);  // [3, 4, 5, 6, 7, 8]
-var range = function(x, y, out = []) {
+var range = function(x, y, o = []) {
   //base
  /* if ((y === x)) {
     return [];
   } //can't see why I can't just return default out */
 
-  if (Math.abs(y - x) <= 1) return []; //using absolute value to simplify 4 or 5 conditions
+  if (Math.abs(y - x) <= 1) return o; //using absolute value to simplify 4 or 5 conditions
   
   
   if (y > x) {
-    return [x + 1].concat(range(x + 1, y));
-  } else {
-    return [x - 1].concat(range(x - 1, y));
+    y--
+    o.unshift(y)
+    return range(x, y, o)
+  } 
+  if (x > y) {
+    x--
+    o.push(x)
+    return range(x, y, o)
   }
 };
 
@@ -126,7 +139,7 @@ console.log(range(3, 17));
 // Example:  exponent(4,3);  // 64
 // https://www.khanacademy.org/computing/computer-science/algorithms/recursive-algorithms/a/computing-powers-of-a-number
 var exponent = function(base, exp, out = 1) {
-  if (exp === 0) {return out}
+  if (exp === 0) return out
   
   //exponent (4, 3) //64
   //4, -2 = 1/16 // -2 -> 1/-2*-1
@@ -153,19 +166,19 @@ var powerOfTwo = function(n) {
 console.log(powerOfTwo(64), powerOfTwo(14), powerOfTwo(99), powerOfTwo(-32), powerOfTwo(-2048), powerOfTwo(1024))
 
 // 9. Write a function that accepts a string a reverses it.
-var reverse = function(string, out = []) {
-  if (out[out.length - 1] === string[0]){return out}
+var reverse = function(string, o = []) {
+  if (string.length === 0) return o.join('')
 
-  out = out.push[string.length - 1]
-  console.log(out)
-  return reverse(string.slice(1), out)
+  o.push(string[string.length - 1])
+  return reverse(string.slice(0, -1), o)
 };
 
 // 10. Write a function that determines if a string is a palindrome.
 var palindrome = function(string) {
-  if (string[0] !== string[string.length - 1]) return false
-  
+  string = string.toLowerCase().replace(/\s/g, '')
   if (string.length <= 1) return true
+  if (string[0] !== string[string.length - 1]) return false
+
   return palindrome(string.slice(1, -1))
 };
 
@@ -175,8 +188,9 @@ var palindrome = function(string) {
 // modulo(17,5) // 2
 // modulo(22,6) // 4
 var modulo = function(x, y) {
-  if (x < y) return x
+  if (x === 0 || y === 0) return undefined
 
+  
   return modulo(x - y, y)
 };
 
