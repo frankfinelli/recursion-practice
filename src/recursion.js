@@ -80,6 +80,7 @@ var arraySum = function(array) {
   return arraySum(array[0] + array.slice(1))
 };
 
+
 // 4. Check if a number is even.
 var isEven = function(n) {
   n = Math.abs(n) // neg. integers
@@ -188,26 +189,44 @@ var palindrome = function(string) {
 // modulo(17,5) // 2
 // modulo(22,6) // 4
 var modulo = function(x, y) {
-  if (x === 0 || y === 0) return undefined
-
   
-  return modulo(x - y, y)
+  //trying without abs value
+  if (x === 0 || y === 0) return 0
+  if (x > 0 && x < y) return x
+  if (x < 0 && x > y) return x
+  
+  return modulo(x + y, y)
 };
+
+console.log(modulo(6, 25))
 
 // 12. Write a function that multiplies two numbers without using the * operator  or
 // JavaScript's Math object.
 // ATTENTION DO NOT LEAVE COMMENTS IN THIS FUNCTION. The test is looking for any ('/').
-var multiply = function(x, y, o = 1) {
+var multiply = function(x, y, o = 0) {
   if (x === 0 || y === 0) return 0
+  if (x === 1) return y
+  if (y === 1) return x
   
-  
+  if (y > 0) {
+    return multiply(x, y - 1, o + x)
 
-  return multiply (x, y, o)
+  } 
+  
+  if (y < 0) {
+    return multiply(x, y + 1, o - x)
+  }
+
 };
 
 // 13. Write a function that divides two numbers without using the / operator  or
 // JavaScript's Math object.
 var divide = function(x, y) {
+  if (x === 0 || y === 0) return NaN
+  if (x === 1) return y
+  if (y === 1) return x
+
+
 
 };
 
@@ -229,6 +248,7 @@ var gcd = function(x, y) {
 // compareStr('', '') // true
 // compareStr('tomato', 'tomato') // true
 var compareStr = function(str1, str2) {
+
 };
 
 // 16. Write a function that accepts a string and creates an array where each letter
@@ -237,39 +257,67 @@ var createArray = function(str){return str.split('')
 };
 
 // 17. Reverse the order of an array
-var reverseArr = function (array) {return array.reverse()
+var reverseArr = function (array, o = []) {
+  if (array.length === 0) return o
+  
+  o.push(array[array.length - 1])
+  return reverseArr(array.slice(0, -1), o)  
 };
 
 // 18. Create a new array with a given value and length.
 // buildList(0,5) // [0,0,0,0,0]
 // buildList(7,3) // [7,7,7]
-var buildList = function(value, length) {
+var buildList = function(value, length, o = []) {
+  if (length === 0) return o
+
+  o.push(value)
+  return buildList(value, length - 1, o)
 };
 
 // 19. Count the occurence of a value inside a list.
 // countOccurrence([2,7,4,4,1,4], 4) // 3
 // countOccurrence([2,'banana',4,4,1,'banana'], 'banana') // 2
-var countOccurrence = function(array, value) {
+var countOccurrence = function(array, value, c = 0, x = 0) {
+  if (array[x] === array[array.length]) return c
+
+  if (array[x] === value) c++
+  
+  return countOccurrence(array, value, c, x + 1)
 };
+
+console.log('COUNT OCC: -- ' + countOccurrence([2,'banana',4,4,1,'banana'], 'banana'), countOccurrence(['',7,null,0,'0',false], null))
 
 // 20. Write a recursive version of map.
 // rMap([1,2,3], timesTwo); // [2,4,6]
-var rMap = function(array, callback, output=[]) {
-  
+var rMap = function(array, callback, o = [], x = 0) {
+  if (array.length === o.length) return o
+
+  o.push(callback(array[x]))
+  return rMap(array, callback, o, x + 1)
 };
 
 // 21. Write a function that counts the number of times a key occurs in an object.
 // var testobj = {'e': {'x':'y'}, 't':{'r': {'e':'r'}, 'p': {'y':'r'}},'y':'e'};
 // countKeysInObj(testobj, 'r') // 1
 // countKeysInObj(testobj, 'e') // 2
-var countKeysInObj = function(obj, key) {
+var countKeysInObj = function(obj, key, c = 0, x = 0) {
+  if (Object.keys(obj)[Object.keys(obj).length - 1] === Object.keys(obj)[x]) return c
+
+  if (Object.keys(obj)[x] === key) c++
+  return countKeysInObj(obj, key, c, x + 1)
 };
+
+console.log('COUNT KEYS: -- ' + countKeysInObj({'e':'y', 'i': 9, 'fire': null}, 'x'))
 
 // 22. Write a function that counts the number of times a value occurs in an object.
 // var testobj = {'e': {'x':'y'}, 't':{'r': {'e':'r'}, 'p': {'y':'r'}},'y':'e'};
 // countValuesInObj(testobj, 'r') // 2
 // countValuesInObj(testobj, 'e') // 1
-var countValuesInObj = function(obj, value) {
+var countValuesInObj = function(obj, value, c = 0, x = 0) {
+  if (Object.keys(obj)[Object.keys(obj).length - 1] === Object.keys(obj)[x]) return c
+
+  if (obj[Object.keys(obj)[x]] === value) c++
+  return countValuesInObj(obj, value, c, x + 1)
 };
 
 // 23. Find all keys in an object (and nested objects) by a provided name and rename
@@ -282,23 +330,65 @@ var replaceKeysInObj = function(obj, key, newKey) {
 // Example:  0, 1, 1, 2, 3, 5, 8, 13, 21, 34.....
 // fibonacci(5);  // [0, 1, 1, 2, 3, 5]
 // Note:  The 0 is not counted.
-var fibonacci = function(n) {
+var fibonacci = function(n, o = [0, 1]) {
+  
+  if (o.length === n) return o
+  //if (o[o.length - 1] > n || n <= 0) return null
+
+  o.push(o[o.length - 1] + o[o.length -2])
+  return fibonacci(n, o)
 };
+
+console.log('WHOLE FIB: -- ' + fibonacci(4) + '; ' + fibonacci(10))
 
 // 25. Return the Fibonacci number located at index n of the Fibonacci sequence.
 // [0,1,1,2,3,5,8,13,21]
 // nthFibo(5); // 5
 // nthFibo(7); // 13
 // nthFibo(3); // 2
-var nthFibo = function(n) {
+var nthFibo = function(n, x = 0) {
+  /* GREAT IF I WANTED TO RETURN THE INDEX OF FIB AND NOT THE NUMBER
+  default param: x = 0
+  
+  if (o[o.length - 1] === n) return x
+  if (o[o.length - 1] > n || n <= 0) return null
+
+  o.push(o[o.length - 1] + o[o.length -2])
+  return nthFibo(n, o, x + 1) 
+  
+
+  */
+  
+  /* SECOND ATTEMPT - RECONSTRUCTING FROM fx-fibonacci TEMPLATE
+
+  if (o[o.length - 1] === o[n]) return o[n]
+  if (o[o.length - 1] > o[n] || o[n] <= 0) return null
+
+  o.push(o[o.length - 1] + o[o.length -2])
+  return nthFibo(n + 1, o) 
+
+  */
+
+  // A GOOD TEMPLATE TO UNDERSTAND THE CALL STACK IN PLAY WITH REFXs
+  if (n <= 0) return 0;
+  if (n === 1) return 1;
+
+  return nthFibo(n - 1) + nthFibo(n - 2);
 };
+
+console.log('nTH FIB: -- ' + nthFibo(13) + ", " + nthFibo(6))
 
 // 26. Given an array of words, return a new array containing each word capitalized.
-// var words = ['i', 'am', 'learning', 'recursion'];
+var words = ['i', 'am', 'learning', 'recursion'];
 // capitalizedWords(words); // ['I', 'AM', 'LEARNING', 'RECURSION']
-var capitalizeWords = function(input) {
+var capitalizeWords = function(input, o = [], x = 0) {
+  if (input.length === x) return o
+  
+  o.push(input[x].toUpperCase())
+  return (capitalizeWords(input, o, x + 1))
 };
 
+console.log(capitalizeWords(words));
 // 27. Given an array of strings, capitalize the first letter of each index.
 // capitalizeFirst(['car', 'poop', 'banana']); // ['Car', 'Poop', 'Banana']
 var capitalizeFirst = function(array) {
@@ -350,15 +440,34 @@ var minimizeZeroes = function(array) {
 // their original sign.  The first number in the index always needs to be positive.
 // alternateSign([2,7,8,3,1,4]) // [2,-7,8,-3,1,-4]
 // alternateSign([-2,-7,8,3,-1,4]) // [2,-7,8,-3,1,-4]
-var alternateSign = function(array) {
+var alternateSign = function(array, o = [], x = 0) {
+  if (x === array.length) return o
+
+  if (x % 2 === 0) o.push(Math.abs(array[x]))
+  if (x % 2 === 1) o.push(-(Math.abs(array[x])))
+
+  return alternateSign(array, o, x + 1)
 };
 
+console.log(alternateSign([2,7,8,3,1,4]), alternateSign([-2,-7,8,3,-1,4]))
 // 35. Given a string, return a string with digits converted to their word equivalent.
 // Assume all numbers are single digits (less than 10).
 // numToText("I have 5 dogs and 6 ponies"); // "I have five dogs and six ponies"
-var numToText = function(str) {
+var numToText = function(str, o = '') {
+  if (!str) return o
+    
+  let numw = {0: 'zero', 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine'}
+  
+  if (numw.hasOwnProperty(str[0])) { //array of keys iteration? something along those lines, maybe not necessary
+    o += numw[str[0]] //incorrect syntax but idea for accessing object keys
+  } else { 
+    o += str[0]
+  }
+
+  return numToText(str.slice(1), o)
 };
 
+console.log(numToText("I have 5 dogs and 6 ponies"))
 // *** EXTRA CREDIT ***
 
 // 36. Return the number of times a tag occurs in the DOM.
