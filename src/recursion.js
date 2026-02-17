@@ -373,7 +373,7 @@ var replaceKeysInObj = function(obj, key, newKey) {
     }
   }
 }
-  return o;
+  return obj;
 };
 
 console.log("REPLACE KEYS: -- " + replaceKeysInObj({'e': {'x':'y'}, 't':{'r': {'e':'r'}, 'p': {'y':'r'}}, 'y':'e'}, 'e', 'f'))
