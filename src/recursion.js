@@ -365,14 +365,15 @@ console.log("COUNT VALUES: -- " + countValuesInObj({'e': {'x':'y'}, 't':{'r': {'
 var replaceKeysInObj = function(obj, key, newKey) {
   for (let prop in obj) {
     if (prop === key) {
-      obj[newKey] === obj[prop];
-      prop === newKey
+      obj[newKey] = obj[prop];
+      delete obj[prop]
+      prop = newKey
     if (obj[prop] && typeof obj[prop] === 'object'){
       replaceKeysInObj(obj[prop], key, newKey);
     }
   }
 }
-  return obj;
+  return o;
 };
 
 console.log("REPLACE KEYS: -- " + replaceKeysInObj({'e': {'x':'y'}, 't':{'r': {'e':'r'}, 'p': {'y':'r'}}, 'y':'e'}, 'e', 'f'))
