@@ -75,11 +75,16 @@ console.log(sum([1, 2, 3]));*/
 // 3. Sum all numbers in an array containing nested arrays.
 // Example: arraySum([1,[2,3],[[4]],5]); // 15
 var arraySum = function(array) {
-  if (array.length === 0) return 0;
-
-  return arraySum(array[0] + array.slice(1))
+  if (!array.length) return 0;
+  
+  if (Array.isArray(array[0])){
+    return arraySum(array[0]) + arraySum(array.slice(1))
+  } else {
+    return array[0] + arraySum(array.slice(1))
+  }
 };
 
+console.log('ARRAY SUM: -- ' + arraySum([1,[2,3],[[4,6,98]],5]))
 
 // 4. Check if a number is even.
 var isEven = function(n) {
@@ -189,7 +194,6 @@ var palindrome = function(string) {
 // modulo(17,5) // 2
 // modulo(22,6) // 4
 var modulo = function(x, y) {
-
   if (y === 0) return null;
 
   if (x >= 0 && y > 0 && x < y) return x;
@@ -197,8 +201,11 @@ var modulo = function(x, y) {
   if (x >= 0 && y < 0 && x < -y) return x;
   if (x <= 0 && y > 0 && -x < y) return x;
 
+  if ((x > 0 && y > 0) || (x < 0 && y < 0)) {
+    return modulo(x - y, y);
+  }
 
-  return modulo(x - y, y);
+  return modulo(x + y, y);
 };
   //trying without abs value
 
@@ -233,11 +240,12 @@ console.log('MULTIPLY: -- ' + multiply(3, 92) + "; " + multiply(34, 1) + "; " + 
 // JavaScript's Math object.
 var divide = function(x, y, o = 0) {
   if (y === 0) return 'cannot divide by zero'
-  
+  if (x < y && x > -y) return o;
+
   if (x < y && x > -y) return o
 
   if ((x > 0 && y > 0) || (x < 0 && y < 0)) {
-    return divide(x - y, y, o + 1)
+    return divide(x - y, y, o + 1);
   }
 
   return divide (x + y, y, o - 1)
@@ -329,10 +337,15 @@ var rMap = function(array, callback, o = [], x = 0) {
 // countKeysInObj(testobj, 'r') // 1
 // countKeysInObj(testobj, 'e') // 2
 var countKeysInObj = function(obj, key, c = 0, x = 0) {
-  if (Object.keys(obj)[Object.keys(obj).length - 1] === Object.keys(obj)[x]) return c
-
-  if (Object.keys(obj)[x] === key) c++
-  return countKeysInObj(obj, key, c, x + 1)
+  for (let prop in obj) {
+    if (prop === key) {
+      c++;
+    }
+    if (obj[prop] && typeof obj[prop] === 'object') {
+      c = countKeysInObj(obj[prop], key, c);
+    }
+  }
+  return c;
 };
 
 console.log('COUNT KEYS: -- ' + countKeysInObj({'e':'y', 'i': 9, 'fire': null}, 'x'))
@@ -342,15 +355,21 @@ console.log('COUNT KEYS: -- ' + countKeysInObj({'e':'y', 'i': 9, 'fire': null}, 
 // countValuesInObj(testobj, 'r') // 2
 // countValuesInObj(testobj, 'e') // 1
 var countValuesInObj = function(obj, value, c = 0, x = 0) {
-  if (Object.keys(obj)[Object.keys(obj).length - 1] === Object.keys(obj)[x]) return c
-
-  if (obj[Object.keys(obj)[x]] === value) c++
-  return countValuesInObj(obj, value, c, x + 1)
+  for (let prop in obj) {
+    if (obj[prop] === value) {
+      c++;
+    }
+    if (obj[prop] && typeof obj[prop] === 'object') {
+      c = countKeysInObj(obj[prop], value, c);
+    }
+  }
+  return c;
 };
 
 // 23. Find all keys in an object (and nested objects) by a provided name and rename
 // them to a provided new name while preserving the value stored at that key.
 var replaceKeysInObj = function(obj, key, newKey) {
+
 };
 
 // 24. Get the first n Fibonacci numbers.  In the Fibonacci Sequence, each subsequent
@@ -396,20 +415,12 @@ var nthFibo = function(n, o = []) {
 
   */
 
-  /* A GOOD TEMPLATE TO UNDERSTAND THE CALL STACK IN PLAY WITH REFXs 
-  if (n <= 0) return 0;
+ // A GOOD TEMPLATE TO UNDERSTAND THE CALL STACK IN PLAY WITH REFXs 
+  if (n < 0) return null
+  if (n === 0) return 0;
   if (n === 1) return 1;
 
-  return nthFibo(n - 1) + nthFibo(n - 2); */
-
-  //RETRY BASED ON CURRENT UNDERSTANDING
-
-  if (n <= 0) return 0
-  if (n === 1) return 1
-  if (o.length === n) return o[o.length - 1]
-
-  o.push(o[o.length - 1] + o[o.length - 2])
-  return nthFibo(n, o)
+  return nthFibo(n - 1) + nthFibo(n - 2); 
 };
 
 console.log('nTH FIB: -- ' + nthFibo(13) + ", " + nthFibo(6))
@@ -449,18 +460,28 @@ var nestedEvenSum = function(obj, o = 0) {
   for (let key in obj) {
     if (obj[key] % 2 === 0) {
       o += obj[key]
+    } else if (typeof obj[key] === 'object'){
+      o = nestedEvenSum(obj[key], o)
     }
   }
 
-  return nestedEvenSum(obj.slice(1), o) 
+  return o 
 };
 
 // 29. Flatten an array containing nested arrays.
 // Example: flatten([1,[2],[3,[[4]]],5]); // [1,2,3,4,5]
 var flatten = function(arrays, o = []) {
+  if (!arrays.length) return o
 
-
+  if(Array.isArray(arrays[0])) {
+    o.push(...arrays[0])
+  } else {
+    o.push(arrays[0])
+  }
+  return flatten(arrays.slice(1), o)
 };
+
+console.log('FLATTEN: -- ' + flatten([1,[2],[3,[[4]]],5]))
 
 // 30. Given a string, return an object containing tallies of each letter.
 // letterTally('potato'); // {'p':1, 'o':2, 't':2, 'a':1}
@@ -509,8 +530,8 @@ var numToText = function(str, o = '') {
     
   let numw = {0: 'zero', 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine'}
   
-  if (numw.hasOwnProperty(str[0])) { //array of keys iteration? something along those lines, maybe not necessary
-    o += numw[str[0]] //incorrect syntax but idea for accessing object keys
+  if (numw.hasOwnProperty(str[0])) { 
+    o += numw[str[0]] 
   } else { 
     o += str[0]
   }
@@ -535,10 +556,16 @@ var binarySearch = function(array, target, min, max) {
 // 38. Write a merge sort function.
 // Sample array:  [34,7,23,32,5,62]
 // Sample output: [5,7,23,32,34,62]
-var mergeSort = function(array) {
+var mergeSort = function(array, o = []) {
+  if(!array.length) return o
+
+  if (array[0] >= array[1]) o.push(array[0])
+  if (array[0] < array[1]) o.unshift(array[0])
+
+  return (array.slice(1), o)
 };
 
-
+console.log('MERGE SORT: -- ' + mergeSort([34,7,23,32,5,62]))
 
 //-----------------------------------
 // DON'T REMOVE THIS CODE -----------
