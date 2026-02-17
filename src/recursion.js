@@ -242,8 +242,6 @@ var divide = function(x, y, o = 0) {
   if (y === 0) return 'cannot divide by zero'
   if (x < y && x > -y) return o;
 
-  if (x < y && x > -y) return o
-
   if ((x > 0 && y > 0) || (x < 0 && y < 0)) {
     return divide(x - y, y, o + 1);
   }
@@ -267,7 +265,7 @@ var gcd = function(x, y) {
   return gcd(y, x % y)
 };
 
-console.log("GCD: -- " + gcd(3, 12) + '; ' + gcd (9, 14))
+console.log("GCD: -- " + gcd(3, 12) + '; ' + gcd (64, 18))
 
 // 15. Write a function that compares each character of two strings and returns true if
 // both are identical.
@@ -336,7 +334,7 @@ var rMap = function(array, callback, o = [], x = 0) {
 // var testobj = {'e': {'x':'y'}, 't':{'r': {'e':'r'}, 'p': {'y':'r'}},'y':'e'};
 // countKeysInObj(testobj, 'r') // 1
 // countKeysInObj(testobj, 'e') // 2
-var countKeysInObj = function(obj, key, c = 0, x = 0) {
+var countKeysInObj = function(obj, key, c = 0) {
   for (let prop in obj) {
     if (prop === key) {
       c++;
@@ -348,7 +346,7 @@ var countKeysInObj = function(obj, key, c = 0, x = 0) {
   return c;
 };
 
-console.log('COUNT KEYS: -- ' + countKeysInObj({'e':'y', 'i': 9, 'fire': null}, 'x'))
+console.log('COUNT KEYS: -- ' + countKeysInObj({'e':'y', 'i': 9, 'fire': null}, 'fire'))
 
 // 22. Write a function that counts the number of times a value occurs in an object.
 // var testobj = {'e': {'x':'y'}, 't':{'r': {'e':'r'}, 'p': {'y':'r'}},'y':'e'};
@@ -360,11 +358,13 @@ var countValuesInObj = function(obj, value, c = 0, x = 0) {
       c++;
     }
     if (obj[prop] && typeof obj[prop] === 'object') {
-      c = countKeysInObj(obj[prop], value, c);
+      c = countValuesInObj(obj[prop], value, c);
     }
   }
   return c;
 };
+
+console.log("COUNT VALUES: -- " + countValuesInObj({'e': {'x':'y'}, 't':{'r': {'e':'r'}, 'p': {'y':'r'}},'y':'e'}, 'r'))
 
 // 23. Find all keys in an object (and nested objects) by a provided name and rename
 // them to a provided new name while preserving the value stored at that key.
@@ -386,14 +386,14 @@ var fibonacci = function(n, o = [0, 1]) {
   return fibonacci(n, o)
 };
 
-console.log('WHOLE FIB: -- ' + fibonacci(4) + '; ' + fibonacci(10))
+console.log('WHOLE FIB: -- ' + fibonacci(4) + '; ' + fibonacci(10) + '; ' + fibonacci(18))
 
 // 25. Return the Fibonacci number located at index n of the Fibonacci sequence.
 // [0,1,1,2,3,5,8,13,21]
 // nthFibo(5); // 5
 // nthFibo(7); // 13
 // nthFibo(3); // 2
-var nthFibo = function(n, o = []) {
+var nthFibo = function(n, o = [0, 1]) {
   /* GREAT IF I WANTED TO RETURN THE INDEX OF FIB AND NOT THE NUMBER
   default param: x = 0
   
@@ -415,12 +415,19 @@ var nthFibo = function(n, o = []) {
 
   */
 
- // A GOOD TEMPLATE TO UNDERSTAND THE CALL STACK IN PLAY WITH REFXs 
+ /* A GOOD TEMPLATE TO UNDERSTAND THE CALL STACK IN PLAY WITH REFXs 'fx(n)'
   if (n < 0) return null
   if (n === 0) return 0;
   if (n === 1) return 1;
 
   return nthFibo(n - 1) + nthFibo(n - 2); 
+  */
+
+  if (n < 0) return null
+  if (n < o.length) return o[n]
+
+  o.push(o[o.length - 1] + o[o.length - 2])
+  return nthFibo(n, o)
 };
 
 console.log('nTH FIB: -- ' + nthFibo(13) + ", " + nthFibo(6))
@@ -468,13 +475,21 @@ var nestedEvenSum = function(obj, o = 0) {
   return o 
 };
 
+console.log("NESTED %2 SUM: -- " + nestedEvenSum({
+    a: 2,
+     b: {b: 2, bb: {b: 3, bb: {b: 2}}},
+    c: {c: {c: 2}, cc: 'ball', ccc: 600},
+    d: 1,
+     e: {e: {e: 999}, ee: 'car'}
+   }))
+
 // 29. Flatten an array containing nested arrays.
 // Example: flatten([1,[2],[3,[[4]]],5]); // [1,2,3,4,5]
 var flatten = function(arrays, o = []) {
   if (!arrays.length) return o
 
   if(Array.isArray(arrays[0])) {
-    o.push(...arrays[0])
+    o = flatten(arrays[0], o)
   } else {
     o.push(arrays[0])
   }
@@ -485,7 +500,13 @@ console.log('FLATTEN: -- ' + flatten([1,[2],[3,[[4]]],5]))
 
 // 30. Given a string, return an object containing tallies of each letter.
 // letterTally('potato'); // {'p':1, 'o':2, 't':2, 'a':1}
-var letterTally = function(str, obj) {
+var letterTally = function(str, obj = {}) {
+  if (!str.length) return obj
+
+  if (!obj[str[0]]) obj[str[0]] = 1
+  else obj[str[0]]++
+
+  return letterTally(str.slice(1), obj)
 };
 
 // 31. Eliminate consecutive duplicates in a list.  If the list contains repeated
@@ -493,19 +514,42 @@ var letterTally = function(str, obj) {
 // elements should not be changed.
 // Example: compress([1, 2, 2, 3, 4, 4, 5, 5, 5]) // [1, 2, 3, 4, 5]
 // Example: compress([1, 2, 2, 3, 4, 4, 2, 5, 5, 5, 4, 4]) // [1, 2, 3, 4, 2, 5, 4]
-var compress = function(list) {
+var compress = function(list, o = [], x = 0) {
+  if (list.length === x) return o
+
+  if (list[x] !== list[x - 1]) {
+    o.push(list[x]);
+  }
+
+  return compress(list, o, x + 1);
 };
 
 // 32. Augment every element in a list with a new value where each element is an array
 // itself.
 // Example: augmentElements([[],[3],[7]], 5); // [[5],[3,5],[7,5]]
-var augmentElements = function(array, aug) {
+var augmentElements = function(array, aug, o = [], x = 0) {
+  if (x === array.length) return o;
+
+  array[x].push(aug);
+  o.push(array[x]);
+
+  return augmentElements(array, aug, o, x + 1);
 };
+
+console.log("AUGMENT ARR: -- " + augmentElements([[],[3],[7,90]], 5))
 
 // 33. Reduce a series of zeroes to a single 0.
 // minimizeZeroes([2,0,0,0,1,4]) // [2,0,1,4]
 // minimizeZeroes([2,0,0,0,1,0,0,4]) // [2,0,1,0,4]
-var minimizeZeroes = function(array) {
+var minimizeZeroes = function(array, o = [], x = 0) {
+  if (array.length === x) return o
+
+  if (array[x] === 0 && o[o.length - 1] === 0) {
+    return minimizeZeroes(array, o, x + 1)
+  }
+
+  o.push(array[x])
+  return minimizeZeroes(array, o, x + 1)
 };
 
 // 34. Alternate the numbers in an array between positive and negative regardless of
