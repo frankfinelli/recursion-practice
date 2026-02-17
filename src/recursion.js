@@ -189,46 +189,61 @@ var palindrome = function(string) {
 // modulo(17,5) // 2
 // modulo(22,6) // 4
 var modulo = function(x, y) {
-  
-  //trying without abs value
-  if (x === 0 || y === 0) return 0
-  if (x > 0 && x < y) return x
-  if (x < 0 && x > y) return x
-  
-  return modulo(x + y, y)
-};
 
-console.log(modulo(6, 25))
+  if (y === 0) return null;
+
+  if (x >= 0 && y > 0 && x < y) return x;
+  if (x <= 0 && y < 0 && x > y) return x;
+  if (x >= 0 && y < 0 && x < -y) return x;
+  if (x <= 0 && y > 0 && -x < y) return x;
+
+
+  return modulo(x - y, y);
+};
+  //trying without abs value
+
+    /*
+
+  if (x === 0 || y === 0) return 0
+  if (x >= 0 && x < y) return x
+  if (x <= 0 && x > y) return x
+  
+  return modulo(x + y, y) */
+console.log("MODULO: -- " + modulo(29, 100))
 
 // 12. Write a function that multiplies two numbers without using the * operator  or
 // JavaScript's Math object.
 // ATTENTION DO NOT LEAVE COMMENTS IN THIS FUNCTION. The test is looking for any ('/').
 var multiply = function(x, y, o = 0) {
-  if (x === 0 || y === 0) return 0
-  if (x === 1) return y
-  if (y === 1) return x
-  
-  if (y > 0) {
-    return multiply(x, y - 1, o + x)
+  if (y === 0) return o 
 
+
+  if (y > 0) {
+    return multiply(x, y - 1, o + x) 
   } 
   
-  if (y < 0) {
-    return multiply(x, y + 1, o - x)
-  }
-
+  return multiply(x, y + 1, o - x) 
 };
+//y will be decremented, eventually returning output/accumulator
+//o + x 'y' times until y becomes 0
+//o - x 'y' times until y becomes 0
+console.log('MULTIPLY: -- ' + multiply(3, 92) + "; " + multiply(34, 1) + "; " + multiply(1, 0))
 
 // 13. Write a function that divides two numbers without using the / operator  or
 // JavaScript's Math object.
-var divide = function(x, y) {
-  if (x === 0 || y === 0) return NaN
-  if (x === 1) return y
-  if (y === 1) return x
+var divide = function(x, y, o = 0) {
+  if (y === 0) return 'cannot divide by zero'
+  
+  if (x < y && x > -y) return o
 
+  if ((x > 0 && y > 0) || (x < 0 && y < 0)) {
+    return divide(x - y, y, o + 1)
+  }
 
-
+  return divide (x + y, y, o - 1)
 };
+
+console.log('DIVIDE: -- ' + divide(9, 3) + "; " + divide(-4, 1) + "; " + divide(1, 0))
 
 // 14. Find the greatest common divisor (gcd) of two positive numbers.  The GCD of two
 // integers is the greatest integer that divides both x and y with no remainder.
@@ -236,24 +251,37 @@ var divide = function(x, y) {
 // http://www.cse.wustl.edu/~kjg/cse131/Notes/Recursion/recursion.html
 // https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/the-euclidean-algorithm
 var gcd = function(x, y) {
+  if (x < 0 || y < 0) return null
+  
   if (x === 0) return y
   if (y === 0) return x
 
   return gcd(y, x % y)
 };
 
+console.log("GCD: -- " + gcd(3, 12) + '; ' + gcd (9, 14))
+
 // 15. Write a function that compares each character of two strings and returns true if
 // both are identical.
 // compareStr('house', 'houses') // false
 // compareStr('', '') // true
 // compareStr('tomato', 'tomato') // true
-var compareStr = function(str1, str2) {
-
+var compareStr = function(str1, str2, x = 0) {
+  if (str1.length === x && str2.length === x) return true
+  if (str1[x] === str2[x]) {
+    return compareStr(str1, str2, x + 1)
+  } else {
+    return false
+  }
 };
 
 // 16. Write a function that accepts a string and creates an array where each letter
 // occupies an index of the array.
-var createArray = function(str){return str.split('')
+var createArray = function(str, o = []){
+  if (!str) return o
+
+  o.push(str[0])
+  return createArray(str.slice(1), o)
 };
 
 // 17. Reverse the order of an array
@@ -278,7 +306,7 @@ var buildList = function(value, length, o = []) {
 // countOccurrence([2,7,4,4,1,4], 4) // 3
 // countOccurrence([2,'banana',4,4,1,'banana'], 'banana') // 2
 var countOccurrence = function(array, value, c = 0, x = 0) {
-  if (array[x] === array[array.length]) return c
+  if (x === array.length) return c
 
   if (array[x] === value) c++
   
@@ -346,7 +374,7 @@ console.log('WHOLE FIB: -- ' + fibonacci(4) + '; ' + fibonacci(10))
 // nthFibo(5); // 5
 // nthFibo(7); // 13
 // nthFibo(3); // 2
-var nthFibo = function(n, x = 0) {
+var nthFibo = function(n, o = []) {
   /* GREAT IF I WANTED TO RETURN THE INDEX OF FIB AND NOT THE NUMBER
   default param: x = 0
   
@@ -360,7 +388,6 @@ var nthFibo = function(n, x = 0) {
   */
   
   /* SECOND ATTEMPT - RECONSTRUCTING FROM fx-fibonacci TEMPLATE
-
   if (o[o.length - 1] === o[n]) return o[n]
   if (o[o.length - 1] > o[n] || o[n] <= 0) return null
 
@@ -369,11 +396,20 @@ var nthFibo = function(n, x = 0) {
 
   */
 
-  // A GOOD TEMPLATE TO UNDERSTAND THE CALL STACK IN PLAY WITH REFXs
+  /* A GOOD TEMPLATE TO UNDERSTAND THE CALL STACK IN PLAY WITH REFXs 
   if (n <= 0) return 0;
   if (n === 1) return 1;
 
-  return nthFibo(n - 1) + nthFibo(n - 2);
+  return nthFibo(n - 1) + nthFibo(n - 2); */
+
+  //RETRY BASED ON CURRENT UNDERSTANDING
+
+  if (n <= 0) return 0
+  if (n === 1) return 1
+  if (o.length === n) return o[o.length - 1]
+
+  o.push(o[o.length - 1] + o[o.length - 2])
+  return nthFibo(n, o)
 };
 
 console.log('nTH FIB: -- ' + nthFibo(13) + ", " + nthFibo(6))
@@ -391,7 +427,11 @@ var capitalizeWords = function(input, o = [], x = 0) {
 console.log(capitalizeWords(words));
 // 27. Given an array of strings, capitalize the first letter of each index.
 // capitalizeFirst(['car', 'poop', 'banana']); // ['Car', 'Poop', 'Banana']
-var capitalizeFirst = function(array) {
+var capitalizeFirst = function(array, o = []) {
+  if (!array.length) return o
+
+  o.push(array[0][0].toUpperCase() + array[0].slice(1))
+  return capitalizeFirst(array.slice(1), o)
 };
 
 // 28. Return the sum of all even numbers in an object containing nested objects.
@@ -403,12 +443,23 @@ var capitalizeFirst = function(array) {
 //   e: {e: {e: 2}, ee: 'car'}
 // };
 // nestedEvenSum(obj1); // 10
-var nestedEvenSum = function(obj) {
+var nestedEvenSum = function(obj, o = 0) {
+  if (!Object.keys(obj).length) return o
+
+  for (let key in obj) {
+    if (obj[key] % 2 === 0) {
+      o += obj[key]
+    }
+  }
+
+  return nestedEvenSum(obj.slice(1), o) 
 };
 
 // 29. Flatten an array containing nested arrays.
 // Example: flatten([1,[2],[3,[[4]]],5]); // [1,2,3,4,5]
-var flatten = function(arrays) {
+var flatten = function(arrays, o = []) {
+
+
 };
 
 // 30. Given a string, return an object containing tallies of each letter.
