@@ -274,11 +274,9 @@ console.log("GCD: -- " + gcd(3, 12) + '; ' + gcd (64, 18))
 // compareStr('tomato', 'tomato') // true
 var compareStr = function(str1, str2, x = 0) {
   if (str1.length === x && str2.length === x) return true
-  if (str1[x] === str2[x]) {
-    return compareStr(str1, str2, x + 1)
-  } else {
-    return false
-  }
+  if (str1[x] === str2[x]) return compareStr(str1, str2, x + 1)
+  else return false
+
 };
 
 // 16. Write a function that accepts a string and creates an array where each letter
@@ -336,10 +334,8 @@ var rMap = function(array, callback, o = [], x = 0) {
 // countKeysInObj(testobj, 'e') // 2
 var countKeysInObj = function(obj, key, c = 0) {
   for (let prop in obj) {
-    if (prop === key) {
-      c++;
-    }
-    if (obj[prop] && typeof obj[prop] === 'object') {
+    if (prop === key) c++;
+    if (obj[prop] && typeof obj[prop] === 'object'){
       c = countKeysInObj(obj[prop], key, c);
     }
   }
@@ -354,9 +350,7 @@ console.log('COUNT KEYS: -- ' + countKeysInObj({'e':'y', 'i': 9, 'fire': null}, 
 // countValuesInObj(testobj, 'e') // 1
 var countValuesInObj = function(obj, value, c = 0, x = 0) {
   for (let prop in obj) {
-    if (obj[prop] === value) {
-      c++;
-    }
+    if (obj[prop] === value) c++;
     if (obj[prop] && typeof obj[prop] === 'object') {
       c = countValuesInObj(obj[prop], value, c);
     }
@@ -369,8 +363,19 @@ console.log("COUNT VALUES: -- " + countValuesInObj({'e': {'x':'y'}, 't':{'r': {'
 // 23. Find all keys in an object (and nested objects) by a provided name and rename
 // them to a provided new name while preserving the value stored at that key.
 var replaceKeysInObj = function(obj, key, newKey) {
-
+  for (let prop in obj) {
+    if (prop === key) {
+      obj[newKey] === obj[prop];
+      prop === newKey
+    if (obj[prop] && typeof obj[prop] === 'object'){
+      replaceKeysInObj(obj[prop], key, newKey);
+    }
+  }
+}
+  return obj;
 };
+
+console.log("REPLACE KEYS: -- " + replaceKeysInObj({'e': {'x':'y'}, 't':{'r': {'e':'r'}, 'p': {'y':'r'}}, 'y':'e'}, 'e', 'f'))
 
 // 24. Get the first n Fibonacci numbers.  In the Fibonacci Sequence, each subsequent
 // number is the sum of the previous two.
